@@ -46,6 +46,10 @@ def update_todo():
     return "Going to update it soon"
         
 
+@app.delete("delete_todo")
+def delete_todo():
+    return "Delete TODOS"
+
 def start():
     uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
 
