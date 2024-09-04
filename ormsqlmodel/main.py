@@ -37,7 +37,7 @@ def get_todo():
     with Session( create_engine ) as session:
         statement = select(Todo)
         result = session.execute(statement)
-        data = result.scalars().all()  # .all() fetches all records as a list
+        data = result.scalars().all()  
         return data
     
     
