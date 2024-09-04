@@ -43,6 +43,7 @@ def get_todo():
     
 @app.put("/updte_todo")    
 def update_todo():
+    return "Going to update it soon"
         
 
 def start():
