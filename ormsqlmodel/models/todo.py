@@ -1,5 +1,5 @@
 
-from sqlmodel import SQLModel,  Field ,Session,create_engine # type: ignore
+from sqlmodel import SQLModel,  Field  # type: ignore
 
 #  Students model
 class Todo(SQLModel, table=True):  # type: ignore
