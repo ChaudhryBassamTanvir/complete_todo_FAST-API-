@@ -6,5 +6,11 @@ class Todo(SQLModel, table=True):  # type: ignore
     title: str
     description: str
     is_complete: bool
-
+    
+    
+class UpdateTodo(SQLModel):  # type: ignore
+    title: str | None
+    description: str | None
+    is_complete: bool |  None
+ 
 

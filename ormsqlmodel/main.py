@@ -1,9 +1,9 @@
-from fastapi import FastAPI, Body, Query, Path  # type: ignore
+from fastapi import FastAPI, HTTPException # type: ignore
 import uvicorn  # type: ignore
 from dotenv import load_dotenv
 from sqlmodel import  select, Session , create_engine # type: ignore
 from .config.db import create_tables,connection  # . mean find in local folder
-from .models.todo import Todo
+from .models.todo import Todo ,UpdateTodo
 
  
  #python.env
@@ -41,9 +41,19 @@ def get_todo():
         return data
     
     
-@app.put("/updte_todo")    
-def update_todo():
-    return "Going to update it soon"
+@app.put("/updte_todo/{id}")    
+def update_todo(id,todo:Todo):
+    with Session(create_engine) as session:
+        db_todo=session.get(Todo,id)
+        if not db_todo:
+            raise HTTPException(status_code=404)
+        hero_data = todo.model_dump(exclude_unset=True)
+        db_todo.sqlmodel_update(hero_data)
+        session.add(db_todo)
+        session.commit()
+        session.refresh(db_todo)
+        return db_todo
+        
         
 
 @app.delete("delete_todo")
