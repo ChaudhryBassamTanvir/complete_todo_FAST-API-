@@ -56,9 +56,16 @@ def update_todo(id,todo:Todo):
         
         
 
-@app.delete("delete_todo")
+@app.delete("delete_todo/{id}")
 def delete_todo():
-    return "Delete TODOS"
+    with Session(connection) as session:
+        db_todo=session.get(Todo,id)
+        if not db_todo:
+            raise HTTPException(status_code=404)
+        session.delete(db_todo)
+        session.commit()
+        session.refresh()
+        return {"status":200,"message":"Todos deleted successfully"} 
 
 def start():
     uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
