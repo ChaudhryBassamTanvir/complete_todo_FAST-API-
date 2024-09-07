@@ -3,13 +3,11 @@ import uvicorn  # type: ignore
 from dotenv import load_dotenv
 from sqlmodel import select, Session  # type: ignore
 
-# Load environment variables
 load_dotenv()
 
 from .config.db import create_tables, connection
 from .models.todo import TodoDetail, UpdateTodoDetail
 
-# Create the FastAPI instance
 app = FastAPI()
 
 # Initialize the database tables
