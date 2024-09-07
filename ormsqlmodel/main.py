@@ -49,15 +49,15 @@ def update_todo(id: int, todo: UpdateTodoDetail):
         session.refresh(db_todo)
         return db_todo
 
-@app.delete("/delete_todo/{id}")
-def delete_todo(id: int):
-    with Session(connection) as session:
-        db_todo = session.get(TodoDetail, id)
-        if not db_todo:
-            raise HTTPException(status_code=404, detail="Todo not found")
-        session.delete(db_todo)
-        session.commit()
-        return {"status": 200, "message": "Todo deleted successfully"}
+# @app.delete("/delete_todo/{id}")
+# def delete_todo(id: int):
+#     with Session(connection) as session:
+#         db_todo = session.get(TodoDetail, id)
+#         if not db_todo:
+#             raise HTTPException(status_code=404, detail="Todo not found")
+#         session.delete(db_todo)
+#         session.commit()
+#         return {"status": 200, "message": "Todo deleted successfully"}
 
 def start():
     uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
