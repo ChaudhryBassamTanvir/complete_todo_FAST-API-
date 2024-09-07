@@ -59,5 +59,5 @@ def delete_todo(id: int):
         session.commit()
         return {"status": 200, "message": "Todo deleted successfully"}
 
-def start():
-    uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
+# def start():
+#     uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
