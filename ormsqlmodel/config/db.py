@@ -11,5 +11,4 @@ print(connection_string)
 connection = create_engine(connection_string)
 
 def create_tables():
-    # Create the tables in the database
     SQLModel.metadata.create_all(connection)
