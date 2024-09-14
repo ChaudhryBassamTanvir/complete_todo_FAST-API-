@@ -1,54 +1,61 @@
-from fastapi import FastAPI, Body, Query, Path  # type: ignore
+from fastapi import FastAPI, HTTPException  # type: ignore
 import uvicorn  # type: ignore
-from sqlmodel import SQLModel, create_engine, select, Field, Session  # type: ignore
-#E58rnAfdhRLmEXme
-# Define the connection string
-connection_string = 'postgresql://postgres.ntgeqvexrciajpvomdvg:E58rnAfdhRLmEXme@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres'
-connection = create_engine(connection_string)
+from dotenv import load_dotenv
+from sqlmodel import select, Session  # type: ignore
 
-# Create the FastAPI instance
+load_dotenv()
+
+from .config.db import create_tables, connection
+from .models.todo import TodoDetail, UpdateTodoDetail
+
 app = FastAPI()
 
-# Define the Students model
-class Todo(SQLModel, table=True):  # type: ignore
-    id: int = Field(default=None, primary_key=True)
-    title: str
-    description: str
-    is_complete: bool
+# Initialize the database tables
+create_tables()
 
-# Create the tables in the database
-SQLModel.metadata.create_all(connection)
+@app.post("/create_todo")
+def create_todo(todo: TodoDetail):
+    with Session(connection) as session:
+        session.add(todo)
+        session.commit()
+        session.refresh(todo)
+        return {"status": "Todo created successfully", "detail": todo}
 
-
-
-#
-# Add a simple route for testing
 @app.get("/")
 def read_root():
     return {"message": "Hello, World!"}
 
-
-
-
-@app.get("/getStudents")
-def get_students():
+@app.get("/get_todos")
+def get_todos():
     with Session(connection) as session:
-        statement = select(Students)
+        statement = select(TodoDetail)
         result = session.execute(statement)
-        data = result.scalars().all()  # .all() fetches all records as a list
-        return data
-    
-    
-@app.get("/getSingleStudents")
-def get_single_students():
-    with Session(connection) as session:
-        statement = select(Students).where(Students.name=="Bassam")
-        result = session.execute(statement)
-        data = result.scalars().all()  # .all() fetches all records as a list
+        data = result.scalars().all()
         return data
 
-# a start function to run the application
+@app.put("/update_todo/{id}")
+def update_todo(id: int, todo: UpdateTodoDetail):
+    with Session(connection) as session:
+        db_todo = session.get(TodoDetail, id)
+        if not db_todo:
+            raise HTTPException(status_code=404, detail="Todo not found")
+        todo_data = todo.dict(exclude_unset=True)
+        for key, value in todo_data.items():
+            setattr(db_todo, key, value)
+        session.add(db_todo)
+        session.commit()
+        session.refresh(db_todo)
+        return db_todo
+
+@app.delete("/delete_todo/{id}")
+def delete_todo(id: int):
+    with Session(connection) as session:
+        db_todo = session.get(TodoDetail, id)
+        if not db_todo:
+            raise HTTPException(status_code=404, detail="Todo not found")
+        session.delete(db_todo)
+        session.commit()
+        return {"status": 200, "message": "Todo deleted successfully"}
+
 def start():
     uvicorn.run("ormsqlmodel.main:app", host="127.0.0.1", port=8000, reload=True)
-
-
